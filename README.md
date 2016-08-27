@@ -7,7 +7,8 @@ The version included here is the "Tweet" version ("NaCl in 100 tweets") by Dan B
 To understand the NaCl specs, the reader is referred to the NaCl specs at http://nacl.cr.yp.to/. 
 This binding is very thin and should be easy to use for anybody knowing NaCl. 
 
-The Lua binding hides the NaCl idiosynchrasies 
+
+*NOT YET IMPLEMENTED*  The Lua binding hides the NaCl idiosynchrasies 
 (eg. 32 mandatory leading null bytes for the text to encrypt and 16 leading null bytes 
 in the encrypted text). So the user does not need to provide or take care of the leading null spaces.
 
@@ -35,6 +36,7 @@ box_getpk(sk)
 
 box(plain, nonce, bpk, ask)
 	plain is the plain text that Alice encrypts for Bob
+    plain MUST start with 32 null bytes, ie. ('\0'):rep(32)
 	nonce is 24 bytes (must be different for each encryption)
 	bpk (32 bytes):  Bob's public key 
 	ask (32 bytes):  Alice's secret key
@@ -65,6 +67,7 @@ box_afternm_open() is an alias of secretbox_open()
 		
 secretbox(plain, n, k)
 	encrypt plain string with key k and nonce n
+    plain MUST start with 32 null bytes
 	k: a 32-byte string
 	n: a 24-byte nonce
 	return the encrypted text
@@ -81,7 +84,7 @@ secretbox_open(encr, n, k)
 	embedded in 'encr' is checked before the actual decryption.
 	k: a 32-byte string
 	n: a 24-byte nonce
-	return the decrypted text
+	return the decrypted text (including the leading 32 null char...)
 	or (nil, error msg) if the MAC is wrong of if the nonce or key 
 	lengths are not valid.
 
