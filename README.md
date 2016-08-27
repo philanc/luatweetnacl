@@ -133,8 +133,14 @@ sign_open(text, pk)
 	(ie. without the signature)
 	return (nil, error msg) if the signature is not valid or if the 
 	pk lemgth is not valid (not 32)
-
 ```
+
+### License
+
+ltnacl is distributed under the terms of the MIT License. The "tweet" NaCl core implementation is public domain, by Daniel Bernstein et al.
+
+Copyright (c) 2016  Phil Leblanc 
+
 
 	
 
