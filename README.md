@@ -1,4 +1,4 @@
-# ltnacl
+# Luatweetnacl
 
 This is a Lua binding to the wonderful NaCl crypto library by Dan Bernstein, Tanja Lange et al. -- http://nacl.cr.yp.to/
 
@@ -137,7 +137,7 @@ sign_open(text, pk)
 
 ### License
 
-ltnacl is distributed under the terms of the MIT License. The "tweet" NaCl core implementation is public domain, by Daniel Bernstein et al.
+luatweetnacl is distributed under the terms of the MIT License. The "tweet" NaCl core implementation is public domain, by Daniel Bernstein et al.
 
 Copyright (c) 2016  Phil Leblanc 
 
