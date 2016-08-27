@@ -11,6 +11,8 @@ The Lua binding hides the NaCl idiosynchrasies
 (eg. 32 mandatory leading null bytes for the text to encrypt and 16 leading null bytes 
 in the encrypted text). So the user does not need to provide or take care of the leading null spaces.
 
+The binding has been written for Lua 5.3.
+
 Functions:
 ```
 randombytes(n)
