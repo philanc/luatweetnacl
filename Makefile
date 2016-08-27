@@ -20,10 +20,12 @@
 #
 # ----------------------------------------------------------------------
 
-#CC= /f/b/musl1114/bin/musl-gcc
 CC= gcc
 AR= ar
-INCFLAGS= -I../lua/include
+
+# adjust the following to the location of your Lua include file
+INCFLAGS= -I../lua-5.3.3/include
+
 CFLAGS= -Os -fPIC $(INCFLAGS) -DLUA_USE_POSIX -DLUA_USE_STRTODHEX \
          -DLUA_USE_AFORMAT -DLUA_USE_LONGLONG
 LDFLAGS= -fPIC
