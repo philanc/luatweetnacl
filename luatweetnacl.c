@@ -380,7 +380,7 @@ static const struct luaL_Reg luatweetnacllib[] = {
 int luaopen_luatweetnacl (lua_State *L) {
 	luaL_register (L, "luatweetnacl", luatweetnacllib);
     // 
-    lua_pushliteral (L, "_VERSION");
+    lua_pushliteral (L, "VERSION");
 	lua_pushliteral (L, LUATWEETNACL_VERSION); 
 	lua_settable (L, -3);
 	return 1;

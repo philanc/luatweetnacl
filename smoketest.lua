@@ -2,9 +2,15 @@
 
 local nacl = require "luatweetnacl"
 
-function hex(s)  
+function hex(s)  -- return the hex representation of a string
 	return s:gsub(".", function(c)
 		return string.format("%02x", string.byte(c))
+		end)
+end
+
+function hextos(h) -- parse a hex string
+	return h:gsub("..", function(cc)
+		return string.char(tonumber(cc, 16))
 		end)
 end
 
@@ -54,6 +60,13 @@ local s3 = nacl.stream(3, n, k)
 local e3 = nacl.stream_xor("\0\0\0", n, k)
 assert(s3 == e3)
 
+-- poly1305 MAC 	(one of the rfc 7539 test vectors)
+local rfcmsg = "Cryptographic Forum Research Group"
+local rfckey = hextos(
+	"85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b")
+local rfcmac = "a8061dc1305136c6c22b8baf0c0127a9"
+assert(hex(nacl.onetimeauth(rfcmsg, rfckey)) == rfcmac)
+
 -- hash a.k.a. sha512 - check the simplest test vector
 local s, h
 s = "abc"
@@ -63,3 +76,4 @@ assert(hex(nacl.hash(s)) == h)
 
 print("luatweetnacl  ok")
 print("------------------------------------------------------------")
+
