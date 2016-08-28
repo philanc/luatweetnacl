@@ -21,5 +21,5 @@ tweetnacl.so:  *.c *.h
 clean:
 	rm -f *.o *.a *.so
 
-.PHONY: clean smoketest
+.PHONY: clean
 
