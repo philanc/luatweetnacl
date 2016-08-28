@@ -8,9 +8,10 @@ To understand the NaCl specs, the reader is referred to the NaCl specs at http:/
 This binding is very thin and should be easy to use for anybody knowing NaCl. 
 
 
-*NOT YET IMPLEMENTED*  The Lua binding hides the NaCl idiosynchrasies 
-(eg. 32 mandatory leading null bytes for the text to encrypt and 16 leading null bytes 
-in the encrypted text). So the user does not need to provide or take care of the leading null spaces.
+The Lua binding hides the NaCl idiosynchrasies 
+(32 mandatory leading null bytes for the text to encrypt 
+and 16 leading null bytes in the encrypted text). So the user 
+does not need to provide or take care of these leading null spaces.
 
 The binding has been written for Lua 5.3 on Linux.  
 
@@ -36,8 +37,7 @@ box_getpk(sk)
 
 box(plain, nonce, bpk, ask)
 	plain is the plain text that Alice encrypts for Bob
-    plain MUST start with 32 null bytes, ie. ('\0'):rep(32)
-	nonce is 24 bytes (must be different for each encryption)
+  	nonce is 24 bytes (must be different for each encryption)
 	bpk (32 bytes):  Bob's public key 
 	ask (32 bytes):  Alice's secret key
 	return the encrypted text or (nil, error msg)
@@ -67,24 +67,23 @@ box_afternm_open() is an alias of secretbox_open()
 		
 secretbox(plain, n, k)
 	encrypt plain string with key k and nonce n
-    plain MUST start with 32 null bytes
-	k: a 32-byte string
+ 	k: a 32-byte string
 	n: a 24-byte nonce
 	return the encrypted text
 	example: to encrypt string 'abc'  with key 'kkk...' and nonce 'nnn...':
-	   e = secretbox(('\0'):rep32)..'abc', ('n'):rep(24), ('k'):rep(32))
+	   e = secretbox('abc', ('n'):rep(24), ('k'):rep(32))
 	Note: secretbox() performs an authenticated encryption, that is
 	encrypt the plain test (with Salsa20) and compute a MAC (with Poly1305)
 	of the encrypted text. It allows the receiver of the encrypted text to
 	detect if it has been tampered with. The MAC is embedded in the
-	encrypted text (at the beginning, bytes 16 to 32)
+	encrypted text (at the beginning, bytes 1-16)
 	
 secretbox_open(encr, n, k)
 	decrypt encrypted string encr with key k and nonce n. The MAC
 	embedded in 'encr' is checked before the actual decryption.
 	k: a 32-byte string
 	n: a 24-byte nonce
-	return the decrypted text (including the leading 32 null char...)
+	return the decrypted text
 	or (nil, error msg) if the MAC is wrong of if the nonce or key 
 	lengths are not valid.
 
@@ -101,7 +100,6 @@ stream_xor(text, n, k)
 	function is used to encrypt and decrypt.
 	k: a 32-byte string
 	n: a 24-byte nonce
-	As for secretbox(), the text to encrypt MUST start with 32 null bytes.
 	return an encrypted or decrypted string or (nil, error message) if the 
 	nonce or key lengths are not valid.	
 
