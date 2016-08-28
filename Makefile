@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # adjust the following to the location of your Lua include file
 
-INCFLAGS= -I../lua-5.3.3/include
+INCFLAGS= -I../lua/include
 
 # ----------------------------------------------------------------------
 

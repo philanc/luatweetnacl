@@ -8,6 +8,9 @@ function hex(s)
 		end)
 end
 
+print("------------------------------------------------------------")
+print(_VERSION)
+
 local pt, et, dt  -- plain text, encrypted text, decrypted text
 
 pt = ("a"):rep(3)
@@ -58,6 +61,5 @@ h = "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a"
  .. "2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f"
 assert(hex(nacl.hash(s)) == h)
 
-print("------------------------------------------------------------")
 print("luatweetnacl  ok")
 print("------------------------------------------------------------")

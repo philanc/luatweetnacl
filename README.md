@@ -13,7 +13,7 @@ The Lua binding hides the NaCl idiosynchrasies
 and 16 leading null bytes in the encrypted text). So the user 
 does not need to provide or take care of these leading null spaces.
 
-The binding has been written for Lua 5.3 on Linux.  
+The binding has been built and tested on Linux with Lua-5.3.3, Lua-5.2.4 and Lua-5.1.5
 
 It should work for any POSIXy system featuring /dev/urandom (used by function 'randombytes()')
 
