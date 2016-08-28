@@ -17,7 +17,7 @@ The binding has been written for Lua 5.3 on Linux.
 
 It should work for any POSIXy system featuring /dev/urandom (used by function 'randombytes()')
 
-Functions:
+### Functions:
 ```
 randombytes(n)
 	return a string containing n random bytes
