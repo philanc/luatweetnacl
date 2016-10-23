@@ -361,7 +361,7 @@ static const struct luaL_Reg luatweetnacllib[] = {
 	{"secretbox", tw_secretbox},
 	{"secretbox_open", tw_secretbox_open},
 	{"box_afternm", tw_secretbox},
-	{"box_open_afternm", tw_secretbox_open},
+	{"box_afternm_open", tw_secretbox_open},
 	{"box_beforenm", tw_box_beforenm},
 	{"box_stream_key", tw_box_beforenm}, // an alias for box_beforenm()
 	{"stream", tw_stream},
