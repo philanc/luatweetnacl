@@ -1,6 +1,6 @@
 // Copyright (c) 2015  Phil Leblanc  -- see LICENSE file
 // ---------------------------------------------------------------------
-/* tweetnacl
+/*   luatweetnacl
 
 A binding to the wonderful NaCl crypto library by Dan Bernstein,
 Tanja Lange et al. -- http://nacl.cr.yp.to/

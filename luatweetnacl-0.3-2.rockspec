@@ -13,6 +13,9 @@ description = {
    homepage = "https://github.com/philanc/luatweetnacl",
    license = "MIT",
 }
+supported_platforms = { 
+	"linux", 
+}
 dependencies = {
    "lua >= 5.1"
 }
