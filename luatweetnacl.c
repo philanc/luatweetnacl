@@ -8,6 +8,12 @@ Tanja Lange et al. -- http://nacl.cr.yp.to/
 The version included here is the "Tweet" version ("NaCl in 100 tweets")
 by Dan Bernstein et al. --  http://tweetnacl.cr.yp.to/index.html
 
+
+170805 
+- replaced malloc()/free() buffer allocation with lua_newuserdata()
+  to prevent memory leaks in case of out-of-memory errors in 
+  lua_pushlstring() calls. (as suggested by Daurnimator)
+  
 160827
 - the leading 32 and 16 null bytes are no longer required or 
   returned to the user. This is processed in the Lua binding
@@ -34,7 +40,7 @@ NaCl specs: see http://nacl.cr.yp.to/
 
 */
 
-#define LUATWEETNACL_VERSION "luatweetnacl-0.3"
+#define LUATWEETNACL_VERSION "luatweetnacl-0.5"
 
 #include <stdlib.h>
 #include <stdio.h>
