@@ -1,4 +1,4 @@
-// Copyright (c) 2015  Phil Leblanc  -- see LICENSE file
+// Copyright (c) 2017  Phil Leblanc  -- see LICENSE file
 // ---------------------------------------------------------------------
 /*   luatweetnacl
 
@@ -86,10 +86,11 @@ static int tw_randombytes(lua_State *L) {
     size_t bufln; 
 	lua_Integer li = luaL_checkinteger(L, 1);  // 1st arg
 	bufln = (size_t) li;
-    unsigned char *buf = malloc(bufln); 
+    // replace malloc() with lua_newuserdata
+    unsigned char *buf = lua_newuserdata(L, bufln); 
 	randombytes(buf, li);
     lua_pushlstring (L, buf, bufln); 
-    free(buf);
+	// (Lua stack is adjusted by Lua, buf will be disposed by Lua GC)
 	return 1;
 }//randombytes()
 
@@ -123,15 +124,13 @@ static int tw_box(lua_State *L) {
 	if (nln != crypto_box_NONCEBYTES) LERR("box_open: bad nonce size");
 	if (pkln != crypto_box_PUBLICKEYBYTES) LERR("box_open: bad pk size");
 	if (skln != crypto_box_SECRETKEYBYTES) LERR("box_open: bad sk size");
-	unsigned char * buf = malloc(mln+64);
+	unsigned char * buf = lua_newuserdata(L, mln+64);
 	// will encrypt over the plain text with a 64 byte window
 	memcpy(buf+64, m, mln);
 	// zero the 32 bytes before the plain text m
 	memset(buf+64-32, 0, 32);
-	//~ int r = crypto_box(buf, m, mln, n, pk, sk);
 	int r = crypto_box(buf, buf+64-32, mln+32, n, pk, sk);
 	lua_pushlstring(L, buf+16, mln+16); 
-	free(buf);
 	return 1;   
 }// box()
 
@@ -145,7 +144,7 @@ static int tw_box_open(lua_State *L) {
 	if (nln != crypto_box_NONCEBYTES) LERR("box_open: bad nonce size");
 	if (pkln != crypto_box_PUBLICKEYBYTES) LERR("box_open: bad pk size");
 	if (skln != crypto_box_SECRETKEYBYTES) LERR("box_open: bad sk size");
-	unsigned char * buf = malloc(cln+64);
+	unsigned char * buf = lua_newuserdata(L, cln+64);
 	// will decrypt over the encrypted text with a 64 byte window
 	memcpy(buf+64, c, cln);
 	// zero the 16 bytes before the encr text
@@ -153,7 +152,6 @@ static int tw_box_open(lua_State *L) {
 	//~ int r = crypto_box_open(buf, c, cln, n, pk, sk);
 	int r = crypto_box_open(buf, buf+64-16, cln+16, n, pk, sk);
 	if (r != 0) { 
-		free(buf); 
 		lua_pushnil (L);
 		lua_pushfstring(L, "box_open error %d", r);
 		return 2;         
@@ -161,7 +159,6 @@ static int tw_box_open(lua_State *L) {
 	// return the plain text, after the 32 null
 	// plain text is 16 bytes shorter than encrypted (the poly1305 MAC)
 	lua_pushlstring (L, buf+32, cln-16); 
-	free(buf);
 	return 1;
 } // box_open()
 
@@ -186,7 +183,7 @@ static int tw_secretbox(lua_State *L) {
 	const char *k = luaL_checklstring(L,3,&kln);	
 	if (nln != crypto_box_NONCEBYTES) LERR("secretbox: bad nonce size");
 	if (kln != crypto_secretbox_KEYBYTES) LERR("secretbox: bad key size");
-	unsigned char * buf = malloc(mln+64);
+	unsigned char * buf = lua_newuserdata(L, mln+64);
 	// will encrypt over the plain text with a 64 byte window
 	memcpy(buf+64, m, mln);
 	// zero the 32 bytes before the plain text m
@@ -195,7 +192,6 @@ static int tw_secretbox(lua_State *L) {
 	r = crypto_secretbox(buf, buf+64-32, mln+32, n, k);
 	// bytes 0-15 are null, 16-31 are the poly1305 MAC
 	lua_pushlstring (L, buf+16, mln+16); 
-	free(buf);
 	return 1;
 } // secretbox()
 
@@ -208,14 +204,13 @@ static int tw_secretbox_open(lua_State *L) {
 	//~ if (cln <= crypto_box_ZEROBYTES) LERR("secretbox_open: cln <= ZEROBYTES");
 	if (nln != crypto_box_NONCEBYTES) LERR("secretbox_open: bad nonce size");
 	if (kln != crypto_secretbox_KEYBYTES) LERR("secretbox_open: bad key size");
-	unsigned char * buf = malloc(cln+128);
+	unsigned char * buf = lua_newuserdata(L, cln+128);
 	memcpy(buf+128, c, cln);
 	// zero the 16 bytes before the encr text
 	memset(buf+128-16, 0, 16);
 	//~ r = crypto_secretbox_open(buf, c, cln, n, k);
 	r = crypto_secretbox_open(buf, buf+128-16, cln+16, n, k);
 	if (r != 0) { 
-		free(buf); 
 		lua_pushnil (L);
 		lua_pushfstring(L, "secretbox_open error %d", r);
 		return 2;         
@@ -223,7 +218,6 @@ static int tw_secretbox_open(lua_State *L) {
 	// the first 32 bytes should be null. ignore them
 	// plain is 16 byte shorter than encrypted (the 16-byte MAC)
 	lua_pushlstring (L, buf+32, cln-16); 
-	free(buf);
 	return 1;
 } // secretbox_open()
 
@@ -238,10 +232,9 @@ static int tw_stream(lua_State *L) {
 	const char *k = luaL_checklstring(L,3,&kln);	
 	if (nln != crypto_box_NONCEBYTES) LERR("bad nonce size");
 	if (kln != crypto_secretbox_KEYBYTES) LERR("bad key size");
-	unsigned char * buf = malloc(mln);
+	unsigned char * buf = lua_newuserdata(L, mln);
 	r = crypto_stream(buf, mln, n, k);
 	lua_pushlstring (L, buf, mln); 
-	free(buf);
 	return 1;
 } // stream()
 
@@ -256,10 +249,9 @@ static int tw_stream_xor(lua_State *L) {
 	const char *k = luaL_checklstring(L,3,&kln);	
 	if (nln != crypto_box_NONCEBYTES) LERR("bad nonce size");
 	if (kln != crypto_secretbox_KEYBYTES) LERR("bad key size");
-	unsigned char * buf = malloc(mln);
+	unsigned char * buf = lua_newuserdata(L, mln);
 	r = crypto_stream_xor(buf, m, mln, n, k);
 	lua_pushlstring (L, buf, mln); 
-	free(buf);
 	return 1;
 } // stream_xor()
 
@@ -312,16 +304,14 @@ static int tw_sign(lua_State *L) {
 	const char *sk = luaL_checklstring(L,2,&skln); // secret key
 	if (skln != 64) LERR("bad signature sk size");
 	u64 usmln = mln + 64;
-	unsigned char * buf = malloc(usmln);
+	unsigned char * buf = lua_newuserdata(L, usmln);
 	r = crypto_sign(buf, &usmln, m, mln, sk);
 	if (r != 0) { 
-		free(buf); 
 		lua_pushnil (L);
 		lua_pushfstring(L, "sign error %d", r);
 		return 2;         
 	} 
 	lua_pushlstring(L, buf, usmln); 
-	free(buf);
 	return 1;   
 }// sign()
 
@@ -331,17 +321,15 @@ static int tw_sign_open(lua_State *L) {
 	const char *sm = luaL_checklstring(L,1,&smln);   // signed text
 	const char *pk = luaL_checklstring(L,2,&pkln);   // public key
 	if (pkln != 32) LERR("bad signature pk size");
-	unsigned char * buf = malloc(smln);
+	unsigned char * buf = lua_newuserdata(L, smln);
 	u64 umln;
 	r = crypto_sign_open(buf, &umln, sm, smln, pk);
 	if (r != 0) { 
-		free(buf); 
 		lua_pushnil (L);
 		lua_pushfstring(L, "sign_open error %d", r);
 		return 2;         
 	} 
 	lua_pushlstring(L, buf, umln); 
-	free(buf);
 	return 1;   
 }// sign_open()
 
