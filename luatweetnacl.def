@@ -1,0 +1,5 @@
+
+LIBRARY luatweetnacl.dll
+VERSION 0.5
+EXPORTS
+luaopen_luatweetnacl
