@@ -84,21 +84,31 @@ typedef unsigned long long u64;
 //------------------------------------------------------------
 // nacl functions (the "tweetnacl version")
 
-extern void randombytes(unsigned char *x,unsigned long long xlen); 
+extern int randombytes(unsigned char *x,unsigned long long xlen); 
 
 
 static int tw_randombytes(lua_State *L) {
-	
+	// Lua API:   randombytes(n)  returns a string with n random bytes 
+	// n must be 256 or less.
+	// randombytes return nil, error msg  if the RNG fails or if n > 256
+	//	
     size_t bufln; 
+	unsigned char buf[256];
 	lua_Integer li = luaL_checkinteger(L, 1);  // 1st arg
-	bufln = (size_t) li;
-    // replace malloc() with lua_newuserdata
-    unsigned char *buf = lua_newuserdata(L, bufln); 
-	randombytes(buf, li);
-    lua_pushlstring (L, buf, bufln); 
-	// (Lua stack is adjusted by Lua, buf will be disposed by Lua GC)
+	if ((li > 256 ) || (li < 0)) {
+		lua_pushnil (L);
+		lua_pushliteral(L, "invalid byte number");
+		return 2;      		
+	}
+	int r = randombytes(buf, li);
+	if (r != 0) { 
+		lua_pushnil (L);
+		lua_pushliteral(L, "random generator error");
+		return 2;         
+	} 	
+    lua_pushlstring (L, buf, li); 
 	return 1;
-}//randombytes()
+} //randombytes()
 
 static int tw_box_keypair(lua_State *L) {
 	// generate and return a random key pair (pk, sk)
