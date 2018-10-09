@@ -1,10 +1,4 @@
 
-// interface to the OS Random Number Generator  
-
-// the getrandom() detection code has been provided by Daurnimator 
-// (https://github.com/daurnimator)
-
-
 #ifdef _WIN32
 
 // ---------------------------------------------------------------------
