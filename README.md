@@ -1,3 +1,5 @@
+![CI](https://github.com/philanc/luatweetnacl/workflows/CI/badge.svg)
+
 # luatweetnacl
 
 This is a Lua binding to the wonderful NaCl crypto library by Dan Bernstein, Tanja Lange et al. -- http://nacl.cr.yp.to/

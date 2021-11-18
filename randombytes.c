@@ -1,4 +1,10 @@
 
+// interface to the OS Random Number Generator  
+
+// the getrandom() detection code has been provided by Daurnimator 
+// (https://github.com/daurnimator)
+
+
 #ifdef _WIN32
 
 // ---------------------------------------------------------------------
@@ -12,17 +18,17 @@
 
 int randombytes(unsigned char *x,unsigned long long xlen) {
 	HCRYPTPROV p;
-	ULONG i;
+	int r = 0;
 
 	if (CryptAcquireContext(&p, NULL, NULL,
 	  PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) == FALSE) {
 		return(-1); 
 	}
 	if (CryptGenRandom(p, xlen, (BYTE *)x) == FALSE) {
-		return(-1); 
+		r = -1;
 	}
 	CryptReleaseContext(p, 0);
-	return 0;
+	return r;
 }	
 
 #else // unix
@@ -44,6 +50,9 @@ int randombytes(unsigned char *x,unsigned long long xlen) {
 #define HAVE_GETRANDOM (GLIBC_PREREQ(2,25) && __linux__)
 #endif
 
+#if HAVE_GETRANDOM
+#include <sys/random.h>
+#endif
 
 int randombytes(unsigned char *x, unsigned long long xlen) {
 	int fd, i;
